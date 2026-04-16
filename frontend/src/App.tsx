@@ -2,14 +2,18 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { AudioPlayerProvider } from './components/AudioPlayerProvider';
 import { Layout } from './components/Layout';
+import { AdminLayout } from './components/AdminLayout';
 import { LandingPage } from './pages/LandingPage';
 import { LibraryPage } from './pages/LibraryPage';
 import { EpisodePage } from './pages/EpisodePage';
-import { AdminPage } from './pages/AdminPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { MyLibraryPage } from './pages/MyLibraryPage';
+import { DashboardPage } from './pages/admin/DashboardPage';
+import { EpisodesPage } from './pages/admin/EpisodesPage';
+import { AddContentPage } from './pages/admin/AddContentPage';
+import { UsersPage } from './pages/admin/UsersPage';
 import { useAuth } from './contexts/AuthContext';
 
 function AppRoutes() {
@@ -25,8 +29,18 @@ function AppRoutes() {
 
   return (
     <Routes>
+      {/* Admin panel — completely separate layout */}
+      {user?.is_admin && (
+        <Route path="/panel" element={<AdminLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="episodes" element={<EpisodesPage />} />
+          <Route path="add" element={<AddContentPage />} />
+          <Route path="users" element={<UsersPage />} />
+        </Route>
+      )}
+
+      {/* Main app */}
       <Route element={<Layout />}>
-        {/* Public routes — only for unauthenticated users */}
         {!user && (
           <>
             <Route path="/" element={<LandingPage />} />
@@ -35,7 +49,6 @@ function AppRoutes() {
           </>
         )}
 
-        {/* Protected routes — require login */}
         {user && (
           <>
             <Route path="/" element={<LibraryPage />} />
@@ -43,11 +56,9 @@ function AppRoutes() {
             <Route path="/episode/:id" element={<EpisodePage />} />
             <Route path="/my-library" element={<MyLibraryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            {user.is_admin && <Route path="/panel" element={<AdminPage />} />}
           </>
         )}
 
-        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
