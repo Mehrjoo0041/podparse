@@ -5,10 +5,12 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+import os
+
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-SECRET_KEY = "podparse-secret-change-in-production"
+SECRET_KEY = os.environ.get("SECRET_KEY", "podparse-secret-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 

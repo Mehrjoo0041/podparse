@@ -1,11 +1,22 @@
-"""SQLAlchemy database setup with SQLite."""
+"""SQLAlchemy database setup — supports PostgreSQL (Supabase) and SQLite fallback."""
 
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-DATABASE_URL = "sqlite:///podcast.db"
+load_dotenv()
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Use DATABASE_URL env var for PostgreSQL (Supabase), fall back to SQLite for local dev
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///podcast.db")
+
+# SQLite needs check_same_thread=False; PostgreSQL doesn't
+connect_args = {}
+if DATABASE_URL.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
