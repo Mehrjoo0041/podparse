@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 export function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const sideLink = (to: string, label: string, icon: React.ReactNode) => {
     const active = location.pathname === to;
