@@ -8,7 +8,6 @@ export function MyLibraryPage() {
   const [tab, setTab] = useState<Tab>('saved');
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -16,7 +15,6 @@ export function MyLibraryPage() {
     fetcher(1)
       .then((data) => {
         setEpisodes(data.items);
-        setTotal(data.total);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
