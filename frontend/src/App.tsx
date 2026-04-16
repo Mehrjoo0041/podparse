@@ -4,14 +4,14 @@ import { AudioPlayerProvider } from './components/AudioPlayerProvider';
 import { Layout } from './components/Layout';
 import { AdminLayout } from './components/AdminLayout';
 import { AdminGuard } from './components/AdminGuard';
-import { AuthGuard } from './components/AuthGuard';
-import { GuestGuard } from './components/AuthGuard';
+import { AuthGuard, GuestGuard } from './components/AuthGuard';
 import { HomePage } from './pages/HomePage';
 import { EpisodePage } from './pages/EpisodePage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { MyLibraryPage } from './pages/MyLibraryPage';
+import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { DashboardPage } from './pages/admin/DashboardPage';
 import { EpisodesPage } from './pages/admin/EpisodesPage';
 import { AddContentPage } from './pages/admin/AddContentPage';
@@ -23,7 +23,8 @@ function App() {
       <AuthProvider>
         <AudioPlayerProvider>
           <Routes>
-            {/* Admin panel — separate layout */}
+            {/* Admin — completely separate */}
+            <Route path="/panel/login" element={<AdminLoginPage />} />
             <Route path="/panel" element={<AdminGuard><AdminLayout /></AdminGuard>}>
               <Route index element={<DashboardPage />} />
               <Route path="episodes" element={<EpisodesPage />} />
