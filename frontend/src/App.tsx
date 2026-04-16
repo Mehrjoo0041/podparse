@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { AudioPlayerProvider } from './components/AudioPlayerProvider';
 import { Layout } from './components/Layout';
-import { ProtectedRoute } from './components/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
 import { LibraryPage } from './pages/LibraryPage';
 import { EpisodePage } from './pages/EpisodePage';
