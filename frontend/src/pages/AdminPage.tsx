@@ -46,15 +46,6 @@ function StatCard({ label, value, sub, icon, color }: {
   );
 }
 
-function MiniBar({ value, max }: { value: number; max: number }) {
-  const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
-  return (
-    <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
-      <div className="h-full bg-primary-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
-    </div>
-  );
-}
-
 export function AdminPage() {
   const [tab, setTab] = useState<Tab>('dashboard');
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
