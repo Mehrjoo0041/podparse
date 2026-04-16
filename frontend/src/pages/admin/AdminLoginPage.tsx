@@ -73,7 +73,8 @@ export function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="رمز عبور"
-              className="w-full px-4 py-2.5 bg-stone-700 border border-stone-600 rounded-xl text-sm text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 bg-stone-700 border border-stone-600 rounded-xl text-sm text-white placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ltr"
+              dir="ltr"
               required
             />
           </div>
