@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import os
 import sys
 import traceback
@@ -20,7 +19,6 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # Lazy imports — these modules are heavy (Whisper loads ML models)
-# Imported inside functions so the API server starts fast
 
 
 def _get_downloader():
@@ -36,6 +34,7 @@ def _get_transcriber():
 def _get_narrator():
     from src.tts import EdgeTTSNarrator
     return EdgeTTSNarrator
+
 
 MEDIA_DIR = os.path.join(PROJECT_ROOT, "media")
 
@@ -77,7 +76,7 @@ def _get_audio_duration(path: str) -> Optional[float]:
 
 
 def process_episode(episode_id: int) -> None:
-    """Run download + transcribe in a background thread.
+    """Run the full pipeline: download -> transcribe -> LLM process -> narrate.
 
     Called via asyncio.to_thread() from the router.
     Uses its own DB session since it runs in a separate thread.
@@ -92,7 +91,7 @@ def process_episode(episode_id: int) -> None:
         PodcastDownloader = _get_downloader()
         downloader = PodcastDownloader(output_dir=episode_dir)
 
-        # ---- DOWNLOAD ----
+        # ---- STEP 1: DOWNLOAD ----
         update_episode(db, episode, status="downloading", error_message=None)
         url = episode.source_url
 
@@ -102,7 +101,6 @@ def process_episode(episode_id: int) -> None:
                 update_episode(db, episode, status="error", error_message="No episodes found in RSS feed.")
                 return
             rss_ep = episodes_list[0]
-            # Update metadata from feed if not already set
             updates = {}
             if not episode.title or episode.title == url:
                 updates["title"] = rss_ep["title"]
@@ -111,7 +109,6 @@ def process_episode(episode_id: int) -> None:
             if rss_ep.get("summary"):
                 updates["summary"] = rss_ep["summary"]
             if updates:
-                # Regenerate cover color if title changed
                 if "title" in updates:
                     from ..models import generate_cover_color
                     updates["cover_color"] = generate_cover_color(updates["title"])
@@ -122,10 +119,7 @@ def process_episode(episode_id: int) -> None:
         else:
             audio_path = downloader.download_audio(url)
 
-        # Get duration
         duration = _get_audio_duration(audio_path)
-
-        # Make the path relative to project root for storage
         rel_audio = os.path.relpath(audio_path, PROJECT_ROOT)
         update_episode(
             db, episode,
@@ -134,7 +128,7 @@ def process_episode(episode_id: int) -> None:
             duration_seconds=duration,
         )
 
-        # ---- TRANSCRIBE ----
+        # ---- STEP 2: TRANSCRIBE ----
         WhisperTranscriber = _get_transcriber()
         transcriber = WhisperTranscriber(model_name=episode.whisper_model)
         transcript = transcriber.transcribe(audio_path)
@@ -142,9 +136,34 @@ def process_episode(episode_id: int) -> None:
 
         update_episode(
             db, episode,
-            status="awaiting_translation",
+            status="processing",
             transcript_text=transcript_text,
         )
+
+        # ---- STEP 3: LLM CONTENT PROCESSING ----
+        from .llm_service import is_llm_configured, process_content
+
+        if is_llm_configured():
+            result = process_content(
+                transcript=transcript_text,
+                source_title=episode.title or "",
+            )
+            persian_text = result["persian_content"]
+            summary = result.get("summary", "")
+
+            update_episode(
+                db, episode,
+                status="narrating",
+                persian_text=persian_text,
+                summary=summary if summary else episode.summary,
+            )
+
+            # ---- STEP 4: NARRATE ----
+            _run_narration(db, episode, episode_id)
+
+        else:
+            # No LLM configured — fall back to awaiting manual translation
+            update_episode(db, episode, status="awaiting_translation")
 
     except Exception as exc:
         tb = traceback.format_exc()
@@ -156,8 +175,36 @@ def process_episode(episode_id: int) -> None:
         db.close()
 
 
+def _run_narration(db: Session, episode: Episode, episode_id: int) -> None:
+    """Run TTS narration step."""
+    episode_dir = _get_episode_dir(episode_id)
+    output_path = os.path.join(episode_dir, "narrated.mp3")
+
+    EdgeTTSNarrator = _get_narrator()
+    narrator = EdgeTTSNarrator(voice=episode.voice)
+    narrator.narrate(episode.persian_text, output_path)
+
+    duration = _get_audio_duration(output_path)
+
+    from .storage_service import is_r2_configured, upload_file
+    if is_r2_configured():
+        r2_key = f"episodes/{episode_id}/narrated.mp3"
+        audio_url = upload_file(output_path, r2_key)
+        try:
+            os.remove(output_path)
+        except OSError:
+            pass
+    else:
+        audio_url = os.path.relpath(output_path, PROJECT_ROOT)
+
+    updates = {"status": "done", "narrated_audio_path": audio_url}
+    if duration is not None:
+        updates["duration_seconds"] = duration
+    update_episode(db, episode, **updates)
+
+
 def narrate_episode(episode_id: int) -> None:
-    """Run TTS narration in a background thread.
+    """Run TTS narration in a background thread (for manual translation flow).
 
     EdgeTTSNarrator.narrate() uses asyncio.run() internally,
     so this must run in a thread (not in the async event loop).
@@ -173,33 +220,7 @@ def narrate_episode(episode_id: int) -> None:
             return
 
         update_episode(db, episode, status="narrating", error_message=None)
-
-        episode_dir = _get_episode_dir(episode_id)
-        output_path = os.path.join(episode_dir, "narrated.mp3")
-
-        EdgeTTSNarrator = _get_narrator()
-        narrator = EdgeTTSNarrator(voice=episode.voice)
-        narrator.narrate(episode.persian_text, output_path)
-
-        duration = _get_audio_duration(output_path)
-
-        # Upload to R2 if configured, otherwise use local path
-        from .storage_service import is_r2_configured, upload_file
-        if is_r2_configured():
-            r2_key = f"episodes/{episode_id}/narrated.mp3"
-            audio_url = upload_file(output_path, r2_key)
-            # Clean up local file after upload
-            try:
-                os.remove(output_path)
-            except OSError:
-                pass
-        else:
-            audio_url = os.path.relpath(output_path, PROJECT_ROOT)
-
-        updates = {"status": "done", "narrated_audio_path": audio_url}
-        if duration is not None:
-            updates["duration_seconds"] = duration
-        update_episode(db, episode, **updates)
+        _run_narration(db, episode, episode_id)
 
     except Exception as exc:
         tb = traceback.format_exc()
