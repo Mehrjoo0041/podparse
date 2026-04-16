@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { fetchEpisode, saveEpisode, unsaveEpisode, likeEpisode, unlikeEpisode, type Episode } from '../api/client';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { useAuth } from '../contexts/AuthContext';
+import { getAudioUrl } from '../utils/audio';
 
 function formatDuration(seconds?: number | null): string {
   if (!seconds) return '';
@@ -56,7 +57,7 @@ export function EpisodePage() {
     if (isCurrentlyPlaying) {
       pause();
     } else if (episode.narrated_audio_path) {
-      play({ id: episode.id, title: episode.title, audioUrl: `/${episode.narrated_audio_path}` });
+      play({ id: episode.id, title: episode.title, audioUrl: getAudioUrl(episode.narrated_audio_path) });
     }
   };
 

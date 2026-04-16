@@ -181,10 +181,22 @@ def narrate_episode(episode_id: int) -> None:
         narrator = EdgeTTSNarrator(voice=episode.voice)
         narrator.narrate(episode.persian_text, output_path)
 
-        rel_path = os.path.relpath(output_path, PROJECT_ROOT)
         duration = _get_audio_duration(output_path)
 
-        updates = {"status": "done", "narrated_audio_path": rel_path}
+        # Upload to R2 if configured, otherwise use local path
+        from .storage_service import is_r2_configured, upload_file
+        if is_r2_configured():
+            r2_key = f"episodes/{episode_id}/narrated.mp3"
+            audio_url = upload_file(output_path, r2_key)
+            # Clean up local file after upload
+            try:
+                os.remove(output_path)
+            except OSError:
+                pass
+        else:
+            audio_url = os.path.relpath(output_path, PROJECT_ROOT)
+
+        updates = {"status": "done", "narrated_audio_path": audio_url}
         if duration is not None:
             updates["duration_seconds"] = duration
         update_episode(db, episode, **updates)
