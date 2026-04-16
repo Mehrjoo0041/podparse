@@ -1,4 +1,6 @@
-"""Admin endpoints for managing episodes."""
+"""Admin endpoints for managing episodes — requires admin role."""
+
+from __future__ import annotations
 
 import asyncio
 import math
@@ -7,6 +9,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from ..database import get_db
+from ..dependencies import get_admin_user
+from ..models import User
 from ..schemas import (
     EpisodeDetail,
     EpisodeListItem,
@@ -30,8 +34,12 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 
 @router.post("/submit", response_model=EpisodeDetail, status_code=201)
-async def submit_episode(body: SubmitEpisodeRequest, db: Session = Depends(get_db)):
-    """Submit a URL for processing. Starts download + transcription in background."""
+async def submit_episode(
+    body: SubmitEpisodeRequest,
+    admin: User = Depends(get_admin_user),
+    db: Session = Depends(get_db),
+):
+    """Submit a URL for processing. Admin only."""
     source_type = _detect_source_type(body.url)
     title = body.title or body.url
 
@@ -44,7 +52,6 @@ async def submit_episode(body: SubmitEpisodeRequest, db: Session = Depends(get_d
         whisper_model=body.whisper_model,
     )
 
-    # Run the heavy pipeline in a background thread
     asyncio.get_event_loop().call_soon(
         lambda eid=episode.id: asyncio.ensure_future(asyncio.to_thread(process_episode, eid))
     )
@@ -56,9 +63,10 @@ async def submit_episode(body: SubmitEpisodeRequest, db: Session = Depends(get_d
 def list_all_episodes(
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
+    admin: User = Depends(get_admin_user),
     db: Session = Depends(get_db),
 ):
-    """List ALL episodes regardless of status."""
+    """List ALL episodes regardless of status. Admin only."""
     items, total = list_episodes_all(db, page=page, per_page=per_page)
     return PaginatedEpisodes(
         items=[EpisodeListItem.model_validate(ep) for ep in items],
@@ -73,9 +81,10 @@ def list_all_episodes(
 async def submit_translation(
     episode_id: int,
     body: TranslationUpdateRequest,
+    admin: User = Depends(get_admin_user),
     db: Session = Depends(get_db),
 ):
-    """Submit Persian translation text for an episode, then trigger narration."""
+    """Submit Persian translation text for an episode. Admin only."""
     episode = get_episode(db, episode_id)
     if episode is None:
         raise HTTPException(status_code=404, detail="Episode not found")
@@ -88,7 +97,6 @@ async def submit_translation(
 
     update_episode(db, episode, persian_text=body.persian_text, status="narrating")
 
-    # Run narration in background thread (EdgeTTS uses asyncio.run internally)
     asyncio.get_event_loop().call_soon(
         lambda eid=episode.id: asyncio.ensure_future(asyncio.to_thread(narrate_episode, eid))
     )
@@ -97,8 +105,12 @@ async def submit_translation(
 
 
 @router.post("/episodes/{episode_id}/retry", response_model=EpisodeDetail)
-async def retry_episode(episode_id: int, db: Session = Depends(get_db)):
-    """Retry a failed episode from the beginning."""
+async def retry_episode(
+    episode_id: int,
+    admin: User = Depends(get_admin_user),
+    db: Session = Depends(get_db),
+):
+    """Retry a failed episode. Admin only."""
     episode = get_episode(db, episode_id)
     if episode is None:
         raise HTTPException(status_code=404, detail="Episode not found")
@@ -108,7 +120,6 @@ async def retry_episode(episode_id: int, db: Session = Depends(get_db)):
 
     update_episode(db, episode, status="pending", error_message=None)
 
-    # If we already have persian_text, skip to narration
     if episode.persian_text:
         asyncio.get_event_loop().call_soon(
             lambda eid=episode.id: asyncio.ensure_future(asyncio.to_thread(narrate_episode, eid))
