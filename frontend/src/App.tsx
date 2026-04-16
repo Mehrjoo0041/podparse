@@ -11,6 +11,8 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { MyLibraryPage } from './pages/MyLibraryPage';
+import { RecentPage } from './pages/RecentPage';
+import { CategoriesPage } from './pages/CategoriesPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { DashboardPage } from './pages/admin/DashboardPage';
 import { EpisodesPage } from './pages/admin/EpisodesPage';
@@ -23,7 +25,7 @@ function App() {
       <AuthProvider>
         <AudioPlayerProvider>
           <Routes>
-            {/* Admin — completely separate */}
+            {/* Admin — separate */}
             <Route path="/panel/login" element={<AdminLoginPage />} />
             <Route path="/panel" element={<AdminGuard><AdminLayout /></AdminGuard>}>
               <Route index element={<DashboardPage />} />
@@ -37,6 +39,8 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<GuestGuard><LoginPage /></GuestGuard>} />
               <Route path="/register" element={<GuestGuard><RegisterPage /></GuestGuard>} />
+              <Route path="/recent" element={<AuthGuard><RecentPage /></AuthGuard>} />
+              <Route path="/categories" element={<AuthGuard><CategoriesPage /></AuthGuard>} />
               <Route path="/episode/:id" element={<AuthGuard><EpisodePage /></AuthGuard>} />
               <Route path="/my-library" element={<AuthGuard><MyLibraryPage /></AuthGuard>} />
               <Route path="/profile" element={<AuthGuard><ProfilePage /></AuthGuard>} />

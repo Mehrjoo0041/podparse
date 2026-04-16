@@ -21,6 +21,7 @@ def create_episode(
     podcast_name: Optional[str] = None,
     published_date: Optional[str] = None,
     summary: Optional[str] = None,
+    category: Optional[str] = None,
 ) -> Episode:
     episode = Episode(
         title=title,
@@ -31,6 +32,7 @@ def create_episode(
         podcast_name=podcast_name,
         published_date=published_date,
         summary=summary,
+        category=category,
         cover_color=generate_cover_color(title),
         status="pending",
     )

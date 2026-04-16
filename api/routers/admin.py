@@ -50,6 +50,7 @@ async def submit_episode(
         source_type=source_type,
         voice=body.voice,
         whisper_model=body.whisper_model,
+        category=body.category,
     )
 
     asyncio.get_event_loop().call_soon(

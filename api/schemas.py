@@ -50,6 +50,7 @@ class SubmitEpisodeRequest(BaseModel):
     title: Optional[str] = None
     voice: str = "dilara"
     whisper_model: str = "base"
+    category: Optional[str] = None
 
 
 class TranslationUpdateRequest(BaseModel):
@@ -70,6 +71,7 @@ class EpisodeBase(BaseModel):
     duration_seconds: Optional[float] = None
     voice: str
     whisper_model: str
+    category: Optional[str] = None
     cover_color: str
     created_at: datetime
     updated_at: datetime

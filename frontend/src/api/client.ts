@@ -40,6 +40,12 @@ export interface SubmitRequest {
   title?: string;
   voice?: string;
   whisper_model?: string;
+  category?: string;
+}
+
+export interface Category {
+  name: string;
+  count: number;
 }
 
 export interface UserProfile {
@@ -120,10 +126,19 @@ export function updateProfile(data: { display_name?: string; password?: string }
 
 // ---- Episodes ----
 
-export function fetchEpisodes(page = 1, search = ''): Promise<PaginatedEpisodes> {
+export function fetchEpisodes(page = 1, search = '', category = ''): Promise<PaginatedEpisodes> {
   const params = new URLSearchParams({ page: String(page), per_page: '12' });
   if (search) params.set('search', search);
+  if (category) params.set('category', category);
   return request(`/episodes?${params}`);
+}
+
+export function fetchRecentEpisodes(): Promise<PaginatedEpisodes> {
+  return request('/episodes/recent?per_page=12');
+}
+
+export function fetchCategories(): Promise<Category[]> {
+  return request('/episodes/categories');
 }
 
 export function fetchEpisode(id: number): Promise<Episode> {

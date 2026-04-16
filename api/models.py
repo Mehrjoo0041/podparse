@@ -88,6 +88,8 @@ class Episode(Base):
     voice: Mapped[str] = mapped_column(String(50), nullable=False, default="dilara")
     whisper_model: Mapped[str] = mapped_column(String(50), nullable=False, default="base")
 
+    category: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+
     cover_color: Mapped[str] = mapped_column(String(7), nullable=False, default="#c4b5d0")
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)

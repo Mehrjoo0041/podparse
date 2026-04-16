@@ -7,14 +7,20 @@ export function AddContentPage() {
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [voice, setVoice] = useState('dilara');
+  const [category, setCategory] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const CATEGORIES = [
+    'تکنولوژی', 'کسب‌وکار', 'علمی', 'سلامت', 'آموزشی',
+    'روانشناسی', 'تاریخ', 'هنر', 'ورزش', 'سیاست', 'اقتصاد', 'فرهنگ',
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
     setSubmitting(true);
     try {
-      await submitUrl({ url: url.trim(), title: title.trim() || undefined, voice });
+      await submitUrl({ url: url.trim(), title: title.trim() || undefined, voice, category: category || undefined });
       navigate('/panel/episodes');
     } catch (err) {
       alert(err instanceof Error ? err.message : 'ارسال ناموفق بود');
@@ -60,6 +66,25 @@ export function AddContentPage() {
                 <span className="text-lg block mb-1">👨</span>
                 فرید (مرد)
               </button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">دسته‌بندی</label>
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setCategory(category === cat ? '' : cat)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    category === cat
+                      ? 'bg-primary-500 text-white'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
           <button type="submit" disabled={submitting}
