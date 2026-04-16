@@ -1,7 +1,7 @@
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 
 function formatTime(seconds: number): string {
-  if (!seconds || !isFinite(seconds)) return '0:00';
+  if (!seconds || !isFinite(seconds)) return '۰:۰۰';
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
   return `${m}:${s.toString().padStart(2, '0')}`;
@@ -48,7 +48,7 @@ export function AudioPlayerBar() {
         </button>
 
         {/* Time */}
-        <span className="text-xs text-stone-500 w-20 flex-shrink-0">
+        <span className="text-xs text-stone-500 w-20 flex-shrink-0 ltr" dir="ltr">
           {formatTime(currentTime)} / {formatTime(duration)}
         </span>
 

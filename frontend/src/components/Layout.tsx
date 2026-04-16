@@ -32,17 +32,17 @@ export function Layout() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
               </svg>
             </div>
-            <span className="text-lg font-bold text-stone-900">PodParse</span>
+            <span className="text-lg font-bold text-stone-900">پادپارس</span>
           </Link>
 
           <nav className="flex items-center gap-1">
             {user ? (
               <>
-                {navLink('/', 'Browse')}
-                {navLink('/my-library', 'My Library')}
-                {navLink('/admin', 'Admin')}
+                {navLink('/', 'کاوش')}
+                {navLink('/my-library', 'کتابخونه من')}
+                {navLink('/admin', 'مدیریت')}
 
-                <div className="flex items-center gap-1 ml-2 pl-2 border-l border-stone-200">
+                <div className="flex items-center gap-1 mr-2 pr-2 border-r border-stone-200">
                   <Link
                     to="/profile"
                     className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors"
@@ -57,7 +57,7 @@ export function Layout() {
                   <button
                     onClick={logout}
                     className="px-3 py-2 rounded-lg text-sm text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                    title="Sign out"
+                    title="خروج"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -71,13 +71,13 @@ export function Layout() {
                   to="/login"
                   className="px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
                 >
-                  Sign In
+                  ورود
                 </Link>
                 <Link
                   to="/register"
                   className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors"
                 >
-                  Sign Up
+                  ثبت‌نام
                 </Link>
               </div>
             )}

@@ -26,15 +26,15 @@ export function ProfilePage() {
         data.password = password;
       }
       if (Object.keys(data).length === 0) {
-        setMessage('No changes to save');
+        setMessage('تغییری برای ذخیره وجود نداره');
         setSaving(false);
         return;
       }
       await updateProfile(data);
       setPassword('');
-      setMessage('Profile updated successfully');
+      setMessage('پروفایل با موفقیت به‌روزرسانی شد');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Update failed');
+      setError(err instanceof Error ? err.message : 'به‌روزرسانی ناموفق بود');
     } finally {
       setSaving(false);
     }
@@ -42,10 +42,9 @@ export function ProfilePage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-2xl font-bold text-stone-900 mb-1">Profile</h1>
-      <p className="text-stone-500 mb-8">Manage your account settings</p>
+      <h1 className="text-2xl font-bold text-stone-900 mb-1">پروفایل</h1>
+      <p className="text-stone-500 mb-8">تنظیمات حساب کاربری</p>
 
-      {/* Profile Info */}
       <div className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 mb-6">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center">
@@ -55,9 +54,9 @@ export function ProfilePage() {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-stone-900">{user.display_name}</h2>
-            <p className="text-sm text-stone-500">{user.email}</p>
+            <p className="text-sm text-stone-500 ltr" dir="ltr">{user.email}</p>
             <p className="text-xs text-stone-400 mt-1">
-              Member since {new Date(user.created_at).toLocaleDateString()}
+              عضو از {new Date(user.created_at).toLocaleDateString('fa-IR')}
             </p>
           </div>
         </div>
@@ -71,7 +70,7 @@ export function ProfilePage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">Display Name</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1">نام نمایشی</label>
             <input
               type="text"
               value={displayName}
@@ -81,12 +80,12 @@ export function ProfilePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">New Password</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1">رمز عبور جدید</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Leave blank to keep current"
+              placeholder="خالی بذارید تا تغییر نکنه"
               minLength={6}
               className="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
@@ -97,17 +96,16 @@ export function ProfilePage() {
             disabled={saving}
             className="px-6 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
           >
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
           </button>
         </form>
       </div>
 
-      {/* Logout */}
       <button
         onClick={logout}
         className="w-full py-2.5 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors"
       >
-        Sign Out
+        خروج از حساب
       </button>
     </div>
   );

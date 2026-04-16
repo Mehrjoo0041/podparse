@@ -16,12 +16,18 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Vazirmatn', 'Inter', sans-serif;
   background-color: #fafaf9;
   color: #1c1917;
   margin: 0;
+  direction: rtl;
 }
 
 .font-persian {
   font-family: 'Vazirmatn', sans-serif;
+}
+
+.ltr {
+  direction: ltr;
+  text-align: left;
 }

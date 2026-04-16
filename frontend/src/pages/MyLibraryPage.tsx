@@ -13,9 +13,7 @@ export function MyLibraryPage() {
     setLoading(true);
     const fetcher = tab === 'saved' ? fetchSavedEpisodes : fetchLikedEpisodes;
     fetcher(1)
-      .then((data) => {
-        setEpisodes(data.items);
-      })
+      .then((data) => setEpisodes(data.items))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [tab]);
@@ -23,11 +21,10 @@ export function MyLibraryPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-stone-900 mb-1">My Library</h1>
-        <p className="text-stone-500">Your saved and liked podcasts</p>
+        <h1 className="text-2xl font-bold text-stone-900 mb-1">کتابخونه من</h1>
+        <p className="text-stone-500">پادکست‌های ذخیره‌شده و پسندیده شما</p>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 mb-6 bg-stone-100 rounded-xl p-1 max-w-xs">
         <button
           onClick={() => setTab('saved')}
@@ -37,10 +34,10 @@ export function MyLibraryPage() {
               : 'text-stone-500 hover:text-stone-700'
           }`}
         >
-          <svg className="w-4 h-4 inline-block mr-1.5 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-4 h-4 inline-block ml-1.5 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
           </svg>
-          Saved
+          ذخیره‌شده
         </button>
         <button
           onClick={() => setTab('liked')}
@@ -50,14 +47,13 @@ export function MyLibraryPage() {
               : 'text-stone-500 hover:text-stone-700'
           }`}
         >
-          <svg className="w-4 h-4 inline-block mr-1.5 -mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 inline-block ml-1.5 -mt-0.5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
           </svg>
-          Liked
+          پسندیده
         </button>
       </div>
 
-      {/* Content */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
@@ -72,12 +68,12 @@ export function MyLibraryPage() {
             )}
           </svg>
           <h3 className="text-lg font-medium text-stone-600 mb-1">
-            No {tab} episodes yet
+            {tab === 'saved' ? 'هنوز اپیزودی ذخیره نکردید' : 'هنوز اپیزودی نپسندیدید'}
           </h3>
           <p className="text-sm text-stone-400">
             {tab === 'saved'
-              ? 'Bookmark episodes from the library to find them here'
-              : 'Like episodes to build your collection'}
+              ? 'از بخش کاوش اپیزودها رو ذخیره کنید تا اینجا نشون داده بشن'
+              : 'اپیزودها رو لایک کنید تا مجموعه‌تون رو بسازید'}
           </p>
         </div>
       ) : (

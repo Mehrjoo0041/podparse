@@ -19,7 +19,7 @@ export function RegisterPage() {
       await register(email, displayName, password);
       navigate('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
+      setError(err instanceof Error ? err.message : 'ثبت‌نام ناموفق بود');
     } finally {
       setLoading(false);
     }
@@ -34,8 +34,8 @@ export function RegisterPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-stone-900">Create an account</h1>
-          <p className="text-sm text-stone-500 mt-1">Join PodParse to save and like podcasts</p>
+          <h1 className="text-2xl font-bold text-stone-900">ساخت حساب کاربری</h1>
+          <p className="text-sm text-stone-500 mt-1">به پادپارس بپیوندید و پادکست فارسی گوش بدید</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 space-y-4">
@@ -44,36 +44,37 @@ export function RegisterPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">Display Name</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1">نام نمایشی</label>
             <input
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Your name"
+              placeholder="نام شما"
               className="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1">ایمیل</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 ltr"
+              dir="ltr"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1">رمز عبور</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 6 characters"
+              placeholder="حداقل ۶ کاراکتر"
               minLength={6}
               className="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
               required
@@ -85,13 +86,13 @@ export function RegisterPage() {
             disabled={loading}
             className="w-full py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Create Account'}
+            {loading ? 'در حال ثبت‌نام...' : 'ثبت‌نام'}
           </button>
         </form>
 
         <p className="text-center text-sm text-stone-500 mt-6">
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary-600 font-medium hover:underline">Sign in</Link>
+          قبلاً حساب دارید؟{' '}
+          <Link to="/login" className="text-primary-600 font-medium hover:underline">وارد شوید</Link>
         </p>
       </div>
     </div>
