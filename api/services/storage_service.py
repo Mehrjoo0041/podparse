@@ -5,6 +5,9 @@ from __future__ import annotations
 import os
 from typing import Optional
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import boto3
 from botocore.config import Config
 
