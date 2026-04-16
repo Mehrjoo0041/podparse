@@ -19,9 +19,23 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from src.downloader import PodcastDownloader
-from src.transcriber import WhisperTranscriber
-from src.tts import EdgeTTSNarrator
+# Lazy imports — these modules are heavy (Whisper loads ML models)
+# Imported inside functions so the API server starts fast
+
+
+def _get_downloader():
+    from src.downloader import PodcastDownloader
+    return PodcastDownloader
+
+
+def _get_transcriber():
+    from src.transcriber import WhisperTranscriber
+    return WhisperTranscriber
+
+
+def _get_narrator():
+    from src.tts import EdgeTTSNarrator
+    return EdgeTTSNarrator
 
 MEDIA_DIR = os.path.join(PROJECT_ROOT, "media")
 
@@ -75,6 +89,7 @@ def process_episode(episode_id: int) -> None:
             return
 
         episode_dir = _get_episode_dir(episode_id)
+        PodcastDownloader = _get_downloader()
         downloader = PodcastDownloader(output_dir=episode_dir)
 
         # ---- DOWNLOAD ----
@@ -120,6 +135,7 @@ def process_episode(episode_id: int) -> None:
         )
 
         # ---- TRANSCRIBE ----
+        WhisperTranscriber = _get_transcriber()
         transcriber = WhisperTranscriber(model_name=episode.whisper_model)
         transcript = transcriber.transcribe(audio_path)
         transcript_text = transcript["text"]
@@ -161,6 +177,7 @@ def narrate_episode(episode_id: int) -> None:
         episode_dir = _get_episode_dir(episode_id)
         output_path = os.path.join(episode_dir, "narrated.mp3")
 
+        EdgeTTSNarrator = _get_narrator()
         narrator = EdgeTTSNarrator(voice=episode.voice)
         narrator.narrate(episode.persian_text, output_path)
 
