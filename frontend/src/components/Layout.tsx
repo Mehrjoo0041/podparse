@@ -36,39 +36,46 @@ export function Layout() {
           </Link>
 
           <nav className="flex items-center gap-1">
-            {navLink('/', 'Browse')}
-            {user && navLink('/my-library', 'My Library')}
-            {user && navLink('/admin', 'Admin')}
-
             {user ? (
-              <div className="flex items-center gap-1 ml-2">
-                <Link
-                  to="/profile"
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors"
-                >
-                  <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center">
-                    <span className="text-xs font-bold text-primary-600">
-                      {user.display_name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <span className="hidden sm:inline">{user.display_name}</span>
-                </Link>
-                <button
-                  onClick={logout}
-                  className="px-3 py-2 rounded-lg text-sm text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                  title="Sign out"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                </button>
-              </div>
+              <>
+                {navLink('/', 'Browse')}
+                {navLink('/my-library', 'My Library')}
+                {navLink('/admin', 'Admin')}
+
+                <div className="flex items-center gap-1 ml-2 pl-2 border-l border-stone-200">
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center">
+                      <span className="text-xs font-bold text-primary-600">
+                        {user.display_name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="hidden sm:inline">{user.display_name}</span>
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="px-3 py-2 rounded-lg text-sm text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                    title="Sign out"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </button>
+                </div>
+              </>
             ) : (
-              <div className="flex items-center gap-1 ml-2">
-                {navLink('/login', 'Sign In')}
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors"
+                >
+                  Sign In
+                </Link>
                 <Link
                   to="/register"
-                  className="px-3 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors"
+                  className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors"
                 >
                   Sign Up
                 </Link>
@@ -82,7 +89,7 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <AudioPlayerBar />
+      {user && <AudioPlayerBar />}
     </div>
   );
 }
