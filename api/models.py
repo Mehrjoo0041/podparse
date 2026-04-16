@@ -108,6 +108,20 @@ class SavedEpisode(Base):
     __table_args__ = (UniqueConstraint("user_id", "episode_id"),)
 
 
+class ListenEvent(Base):
+    __tablename__ = "listen_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    episode_id: Mapped[int] = mapped_column(ForeignKey("episodes.id"), nullable=False)
+    completed: Mapped[bool] = mapped_column(Boolean, default=False)
+    listened_seconds: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+
+    user: Mapped["User"] = relationship("User")
+    episode: Mapped["Episode"] = relationship("Episode")
+
+
 class LikedEpisode(Base):
     __tablename__ = "liked_episodes"
 

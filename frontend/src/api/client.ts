@@ -179,3 +179,59 @@ export function likeEpisode(id: number): Promise<void> {
 export function unlikeEpisode(id: number): Promise<void> {
   return request(`/library/liked/${id}`, { method: 'DELETE' });
 }
+
+// ---- Analytics ----
+
+export function recordListen(episodeId: number, completed: boolean, listenedSeconds: number): Promise<void> {
+  return request(`/analytics/listen?episode_id=${episodeId}&completed=${completed}&listened_seconds=${listenedSeconds}`, {
+    method: 'POST',
+  });
+}
+
+export interface DashboardData {
+  users: {
+    total: number;
+    new_week: number;
+    new_month: number;
+    admins: number;
+    active_week: number;
+    active_month: number;
+    with_saves: number;
+    with_likes: number;
+  };
+  episodes: {
+    total: number;
+    done: number;
+    processing: number;
+    error: number;
+  };
+  engagement: {
+    total_listens: number;
+    listens_week: number;
+    completed_listens: number;
+    completion_rate: number;
+    total_saves: number;
+    total_likes: number;
+  };
+  top_episodes: Array<{
+    id: number;
+    title: string;
+    cover_color: string;
+    listens: number;
+    completed: number;
+  }>;
+  recent_users: Array<{
+    id: number;
+    display_name: string;
+    email: string;
+    created_at: string;
+  }>;
+  daily_listens: Array<{
+    date: string;
+    count: number;
+  }>;
+}
+
+export function fetchDashboard(): Promise<DashboardData> {
+  return request('/analytics/dashboard');
+}
