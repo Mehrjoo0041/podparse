@@ -43,7 +43,7 @@ function AppRoutes() {
             <Route path="/episode/:id" element={<EpisodePage />} />
             <Route path="/my-library" element={<MyLibraryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            {user.is_admin && <Route path="/admin" element={<AdminPage />} />}
+            {user.is_admin && <Route path="/panel" element={<AdminPage />} />}
           </>
         )}
 

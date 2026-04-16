@@ -49,7 +49,7 @@ export function Layout() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                   </svg>
                 )}
-                {user.is_admin && navLink('/admin', 'مدیریت',
+                {user.is_admin && navLink('/panel', 'مدیریت',
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
